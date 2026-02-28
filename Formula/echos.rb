@@ -10,9 +10,10 @@ class Echos < Formula
   depends_on "redis"
 
   def install
-    # Install pnpm via corepack (bundled with Node.js)
-    system "corepack", "enable"
-    system "corepack", "prepare", "pnpm@10.30.1", "--activate"
+    # Install pnpm into a local prefix to avoid writing into Homebrew's Node cellar
+    pnpm_prefix = buildpath/"pnpm-global"
+    system "npm", "install", "-g", "pnpm@10.30.1", "--prefix", pnpm_prefix
+    ENV.prepend_path "PATH", pnpm_prefix/"bin"
 
     # Install dependencies with prebuilt native modules
     system "pnpm", "install", "--frozen-lockfile"
